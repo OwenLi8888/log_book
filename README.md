@@ -1,1 +1,3 @@
-# log_book
+# LifeLog
+
+Personal life tracking app.
