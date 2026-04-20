@@ -14,6 +14,7 @@ const navItems = [
   { href: "/goals", label: "Goals", icon: "◎" },
   { href: "/reflections", label: "Reflections", icon: "◇" },
   { href: "/history", label: "History", icon: "▦" },
+  { href: "/gallery", label: "Gallery", icon: "▣" },
 ];
 
 export default function Sidebar({ displayName }: { displayName?: string | null }) {

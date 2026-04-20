@@ -31,10 +31,10 @@ function formatDisplayDate(isoDate: string) {
   });
 }
 
-export default function EntryForm({ userId }: { userId: string }) {
+export default function EntryForm({ userId, initialDate }: { userId: string; initialDate?: string }) {
   const supabase = createClient();
 
-  const [selectedDate, setSelectedDate] = useState(todayISO());
+  const [selectedDate, setSelectedDate] = useState(initialDate ?? todayISO());
   const [highlight, setHighlight] = useState("");
   const [lowlight, setLowlight] = useState("");
   const [mood, setMood] = useState<number | null>(null);

@@ -30,6 +30,21 @@ export default async function DashboardPage() {
   const dates7 = last7Dates();
   const since7 = dates7[0];
 
+  // Reflection banner logic
+  const isSunday = new Date().getDay() === 0;
+  const isFirstOfMonth = new Date().getDate() === 1;
+
+  function sundayOfWeek(): string {
+    const d = new Date();
+    d.setDate(d.getDate() - d.getDay());
+    return d.toISOString().split("T")[0];
+  }
+
+  function firstOfMonth(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+  }
+
   const [
     entryRes,
     habitsRes,
@@ -38,6 +53,8 @@ export default async function DashboardPage() {
     nutritionRes,
     mediaRes,
     goalsRes,
+    weeklyReflectionRes,
+    monthlyReflectionRes,
   ] = await Promise.all([
     supabase.from("entries").select("id, highlight, mood").eq("user_id", user.id).eq("date", today).maybeSingle(),
     supabase.from("habits").select("id, name, color, icon").eq("user_id", user.id).eq("archived", false).order("sort_order"),
@@ -46,6 +63,12 @@ export default async function DashboardPage() {
     supabase.from("nutrition").select("date, calories").eq("user_id", user.id).gte("date", since7).not("calories", "is", null),
     supabase.from("media").select("id, file_url, file_type, uploaded_at").eq("user_id", user.id).order("uploaded_at", { ascending: false }).limit(5),
     supabase.from("goals").select("id, title, type, target, current, unit, deadline, completed").eq("user_id", user.id).eq("completed", false).order("deadline", { ascending: true }).limit(3),
+    isSunday
+      ? supabase.from("reflections").select("id").eq("user_id", user.id).eq("type", "weekly").eq("date", sundayOfWeek()).maybeSingle()
+      : Promise.resolve({ data: { id: "skip" } }),
+    isFirstOfMonth
+      ? supabase.from("reflections").select("id").eq("user_id", user.id).eq("type", "monthly").eq("date", firstOfMonth()).maybeSingle()
+      : Promise.resolve({ data: { id: "skip" } }),
   ]);
 
   const entry = entryRes.data;
@@ -55,6 +78,8 @@ export default async function DashboardPage() {
   const nutritionData = nutritionRes.data ?? [];
   const recentMedia = mediaRes.data ?? [];
   const goals = goalsRes.data ?? [];
+  const showWeeklyBanner = isSunday && !weeklyReflectionRes.data;
+  const showMonthlyBanner = isFirstOfMonth && !monthlyReflectionRes.data;
 
   // Quick stats
   const avgSleep = sleepData.length
@@ -82,6 +107,40 @@ export default async function DashboardPage() {
           {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </p>
       </div>
+
+      {/* Reflection banners */}
+      {(showWeeklyBanner || showMonthlyBanner) && (
+        <section className="mb-8 space-y-3">
+          {showMonthlyBanner && (
+            <div className="flex items-center justify-between border border-gold/40 bg-gold/8 rounded-xl p-4">
+              <div>
+                <p className="font-serif text-base text-navy font-medium">Monthly Reflection</p>
+                <p className="font-sans text-xs text-ink-light mt-0.5">It&apos;s the 1st — time to reflect on last month</p>
+              </div>
+              <Link
+                href="/reflections"
+                className="font-sans text-sm bg-gold/80 text-navy px-4 py-1.5 rounded-lg hover:bg-gold transition-colors font-medium shrink-0"
+              >
+                Reflect →
+              </Link>
+            </div>
+          )}
+          {showWeeklyBanner && (
+            <div className="flex items-center justify-between border border-forest/30 bg-forest/6 rounded-xl p-4">
+              <div>
+                <p className="font-serif text-base text-navy font-medium">Weekly Reflection</p>
+                <p className="font-sans text-xs text-ink-light mt-0.5">Sunday — review your week before it ends</p>
+              </div>
+              <Link
+                href="/reflections"
+                className="font-sans text-sm bg-forest/90 text-paper px-4 py-1.5 rounded-lg hover:bg-forest transition-colors font-medium shrink-0"
+              >
+                Reflect →
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Today's entry status */}
       <section className="mb-8">
