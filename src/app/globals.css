@@ -2,26 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #faf8f4;
+    --paper-dark: #f0ece4;
+    --forest: #4a7c59;
+    --navy: #1a1a2e;
+    --ink: #4a4035;
+    --ink-light: #7a6e5f;
+    --gold: #c9a84c;
+  }
+
+  .dark {
+    --paper: #241e14;
+    --paper-dark: #1c1810;
+    --forest: #6a9c79;
+    --navy: #0a0a1a;
+    --ink: #d4c9b0;
+    --ink-light: #a09080;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair), Georgia, serif;
+    color: var(--navy);
+  }
+
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: var(--ink);
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Paper texture overlay */
+  .paper-surface {
+    position: relative;
+    background-color: var(--paper);
+  }
+
+  .paper-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 1;
+  }
+
+  /* Ruled lines for journal feel */
+  .journal-lines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      rgba(74, 124, 89, 0.08) 31px,
+      rgba(74, 124, 89, 0.08) 32px
+    );
+  }
+
+  /* Page curl on card bottom-right */
+  .page-curl::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(
+      225deg,
+      var(--paper) 45%,
+      rgba(74, 64, 53, 0.12) 50%,
+      rgba(250, 248, 244, 0.8) 55%
+    );
+    border-radius: 0 0 4px 0;
+  }
+
+  /* Auth card */
+  .auth-card {
+    @apply paper-surface rounded-lg shadow-paper-lg border border-paper-dark/60 p-8;
+  }
+
+  /* Journal entry field */
+  .journal-field {
+    @apply w-full bg-transparent border-0 border-b border-ink/15 rounded-none px-0 py-2
+           font-sans text-ink placeholder-ink-light/60
+           focus:outline-none focus:border-forest focus:ring-0
+           resize-none transition-colors duration-200;
+  }
+
+  .journal-field:focus {
+    background: linear-gradient(to bottom, transparent 95%, rgba(74, 124, 89, 0.15) 100%);
+  }
+
+  /* Mood button */
+  .mood-btn {
+    @apply flex flex-col items-center gap-1 px-3 py-2 rounded-lg border-2
+           transition-all duration-200 cursor-pointer select-none;
+  }
+
+  .mood-btn.selected {
+    @apply border-forest bg-forest/10 shadow-sm;
+  }
+
+  .mood-btn:not(.selected) {
+    @apply border-transparent hover:border-ink/20 hover:bg-ink/5;
+  }
+
+  /* Status badge */
+  .status-dot {
+    @apply inline-flex items-center gap-1.5 text-xs font-sans;
+  }
+
+  .status-dot::before {
+    content: "";
+    @apply inline-block w-1.5 h-1.5 rounded-full;
+  }
+
+  .status-dot.saved::before { @apply bg-forest; }
+  .status-dot.saving::before { @apply bg-gold animate-pulse; }
+  .status-dot.unsaved::before { @apply bg-ink-light; }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+
+  /* Sidebar link active state */
+  .nav-link-active {
+    @apply bg-forest/10 text-forest border-r-2 border-forest;
   }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(74, 64, 53, 0.25);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 64, 53, 0.4);
 }

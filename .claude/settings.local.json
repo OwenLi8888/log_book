@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv README.md README.md.bak)",
+      "Bash(npx create-next-app@14 . --app --typescript --tailwind --eslint --src-dir --import-alias \"@/*\" --no-git)",
+      "Bash(cd /tmp)",
+      "Bash(npx create-next-app@14 lifelog --app --typescript --tailwind --eslint --src-dir --import-alias \"@/*\" --no-git)",
+      "Read(//tmp/**)",
+      "Bash(rsync -a /tmp/lifelog/ /c/Users/owenl/Documents/projects/log_book/)",
+      "Bash(cp /tmp/lifelog/package.json .)",
+      "Bash(cp /tmp/lifelog/package-lock.json .)",
+      "Bash(cp /tmp/lifelog/next.config.mjs .)",
+      "Bash(cp /tmp/lifelog/next-env.d.ts .)",
+      "Bash(cp /tmp/lifelog/postcss.config.mjs .)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
