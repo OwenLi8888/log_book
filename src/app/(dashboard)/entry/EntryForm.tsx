@@ -9,13 +9,7 @@ import NutritionLog from "@/components/entry/NutritionLog";
 import SleepLog from "@/components/entry/SleepLog";
 import MediaUpload from "@/components/entry/MediaUpload";
 
-const MOODS = [
-  { value: 1, emoji: "😔", label: "Rough" },
-  { value: 2, emoji: "😕", label: "Low" },
-  { value: 3, emoji: "😐", label: "Okay" },
-  { value: 4, emoji: "🙂", label: "Good" },
-  { value: 5, emoji: "😄", label: "Great" },
-];
+const THUMB_DIAMETER = 18; // px — must match .mood-slider thumb width in globals.css
 
 function todayISO() {
   return new Date().toISOString().split("T")[0];
@@ -100,8 +94,8 @@ export default function EntryForm({ userId, initialDate }: { userId: string; ini
     };
   }
 
-  function handleMoodSelect(value: number) {
-    setMood((prev) => (prev === value ? null : value));
+  function handleMoodChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setMood(parseInt(e.target.value, 10));
     markDirty();
   }
 
@@ -201,21 +195,41 @@ export default function EntryForm({ userId, initialDate }: { userId: string; ini
 
           {/* Mood */}
           <section>
-            <label className="font-serif text-xl text-navy block mb-4">
+            <label className="font-serif text-xl text-navy block mb-5">
               How are you feeling?
             </label>
-            <div className="flex gap-3">
-              {MOODS.map(({ value, emoji, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => handleMoodSelect(value)}
-                  className={`mood-btn flex-1 ${mood === value ? "selected" : ""}`}
-                >
-                  <span className="text-2xl">{emoji}</span>
-                  <span className="font-sans text-xs text-ink-light">{label}</span>
-                </button>
-              ))}
+            <div className="space-y-2">
+              {/* Value bubble tracks thumb */}
+              <div className="relative h-6 select-none pointer-events-none">
+                {mood != null && (
+                  <span
+                    className="absolute -translate-x-1/2 font-serif text-base font-medium text-forest"
+                    style={{
+                      left: `calc(${((mood - 1) / 99) * 100}% + ${(0.5 - (mood - 1) / 99) * THUMB_DIAMETER}px)`,
+                    }}
+                  >
+                    {mood}
+                  </span>
+                )}
+              </div>
+
+              {/* Slider */}
+              <input
+                type="range"
+                min={1}
+                max={100}
+                step={1}
+                value={mood ?? 50}
+                onChange={handleMoodChange}
+                onBlur={save}
+                className="mood-slider"
+              />
+
+              {/* End labels */}
+              <div className="flex justify-between">
+                <span className="font-sans text-xs text-ink-light">Rough</span>
+                <span className="font-sans text-xs text-ink-light">Great</span>
+              </div>
             </div>
           </section>
 

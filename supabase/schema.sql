@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS public.entries (
   date        DATE NOT NULL,
   highlight   TEXT CHECK (char_length(highlight) <= 500),
   lowlight    TEXT CHECK (char_length(lowlight) <= 500),
-  mood        SMALLINT CHECK (mood >= 1 AND mood <= 5),
+  mood        SMALLINT CHECK (mood >= 1 AND mood <= 100),
   notes       TEXT,
   deleted_at  TIMESTAMPTZ,
   created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,

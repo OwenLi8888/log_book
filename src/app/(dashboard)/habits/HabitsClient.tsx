@@ -94,16 +94,12 @@ export default function HabitsClient({ userId }: { userId: string }) {
 
     if (!habitsData) { setLoading(false); return; }
 
-    // Fetch all habit logs for last 366 days
-    const since = new Date();
-    since.setDate(since.getDate() - 366);
-    const sinceISO = since.toISOString().split("T")[0];
-
+    // Fetch all habit logs from app start date so year navigation works
     const { data: logs } = await supabase
       .from("habit_logs")
       .select("habit_id, date, completed")
       .eq("user_id", userId)
-      .gte("date", sinceISO)
+      .gte("date", "2025-01-01")
       .eq("completed", true);
 
     const logsByHabit: Record<string, Set<string>> = {};

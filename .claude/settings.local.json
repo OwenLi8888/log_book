@@ -14,7 +14,8 @@
       "Bash(cp /tmp/lifelog/postcss.config.mjs .)",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git push *)"
     ]
   }
 }
